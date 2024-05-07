@@ -1,0 +1,432 @@
+#!/bin/bash
+#
+#### Script criado por Dagoberto S. Araújo ####
+####         para sistemas Debian          #### 
+####        Atualização do sistema         ####
+
+#===========================================
+# Váriavies com as Cores
+#===========================================
+NONE="\033[0m" # Eliminar as Cores, deixar padrão)
+
+## Cores de Fonte
+K="\033[0;30m" # Black (Preto)
+R="\033[0;31m" # Red (Vermelho)
+G="\033[0;32m" # Green (Verde)
+Y="\033[0;33m" # Yellow (Amarelo)
+B="\033[0;34m" # Blue (Azul)
+M="\033[0;35m" # Magenta (Vermelho Claro)
+C="\033[0;36m" # Cyan (Ciano - Azul Claro)
+W="\033[0;37m" # White (Branco)
+
+## Efeito Negrito (bold) e cores
+BK="\033[1;30m" # Bold+Black (Negrito+Preto)
+BR="\033[1;31m" # Bold+Red (Negrito+Vermelho)
+BG="\033[1;32m" # Bold+Green (Negrito+Verde)
+BY="\033[1;33m" # Bold+Yellow (Negrito+Amarelo)
+BB="\033[1;34m" # Bold+Blue (Negrito+Azul)
+BM="\033[1;35m" # Bold+Magenta (Negrito+Vermelho Claro)
+BC="\033[1;36m" # Bold+Cyan (Negrito+Ciano - Azul Claro)
+BW="\033[1;37m" # Bold+White (Negrito+Branco)
+
+## Cores de fundo (backgroud)
+BGK="\033[40m" # Black (Preto)
+BGR="\033[41m" # Red (Vermelho)
+BGG="\033[42m" # Green (Verde)
+BGY="\033[43m" # Yellow (Amarelo)
+BGB="\033[44m" # Blue (Azul)
+BGM="\033[45m" # Magenta (Vermelho Claro)
+BGC="\033[46m" # Cyan (Ciano - Azul Claro)
+BGW="\033[47m" # White (Branco)
+
+## Cores extras
+BO="\033[1;38;5;214m" # Bold+Orange (Negrito+Laranja)
+BP="\033[1;38;5;93m" # Bold+Purple (Negrito+Roxo)
+
+########################################################################
+# ╭────╮
+# │ 01 │ Categoria pacotes DEB
+# ╰────╯ 
+    clear
+    echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
+    echo -e "$BR╰──> $BG$"$NONE" sudo apt update"
+    if command -v nala &> /dev/null
+    then
+        sudo nala update;
+    else
+        sudo apt update;
+    fi
+    clear
+    echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
+    echo -e "$BR╰──> $BG$"$NONE" Atualização de pacotes deb"
+    clear
+    echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
+    echo -e "$BR╰──> $BG$"$NONE" sudo apt upgrade --assume-yes"
+    if command -v nala &> /dev/null
+    then
+        sudo nala upgrade --assume-yes;
+    else
+        sudo apt upgrade --assume-yes;
+    fi
+    sudo dpkg --configure -a;
+    clear
+    echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
+    echo -e "$BR╰──> $BG$"$NONE" sudo apt autoremove --assume-yes"
+    if command -v nala &> /dev/null
+    then
+        sudo nala autoremove --assume-yes;
+    else
+        sudo apt autoremove --assume-yes;
+    fi
+# echo Limpeza no diretório /var/cache/apt/archives/;
+    clear
+    echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
+    echo -e "$BR╰──> $BG$"$NONE" Limpeza no diretório /var/cache/apt/archives/"
+    if command -v nala &> /dev/null
+    then
+        sudo nala clean;
+    else
+        sudo apt clean;
+    fi
+    clear
+    echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
+    echo -e "$BR╰──> $BG$"$NONE" ajustes"
+########################################################################
+# ╭────╮
+# │ 02 │ Ajuste de google-chrome-stable para google-chrome
+# ╰────╯ para evitar ícone duplicado no cairo-dock
+# 
+# Obtém a data atual no formato "aaaa-mm-dd"
+data_atual=$(date +%Y-%m-%d)
+
+# Lista de palavras1 a serem procurados
+palavras1=("google-chrome")
+
+# Arquivo de log a ser pesquisado
+arquivo_log="/var/log/dpkg.log"
+
+# Inicializa uma variável para indicar se algum termo foi encontrado
+encontrado=false
+
+# Loop pelos palavras1
+for termo in "${palavras1[@]}"; do
+    if grep -q "$data_atual.*$termo" "$arquivo_log"; then
+        # Substitui google-chrome-stable para google-chrome:
+        sudo sed  -i "s|google-chrome-stable|google-chrome|g" /usr/share/applications/google-chrome.desktop
+        encontrado=true  # Define a variável como verdadeira quando o termo é encontrado
+        break  # Interrompe a pesquisa após o primeiro termo encontrado
+    fi
+done
+
+if [ "$encontrado" = false ]; then
+        
+        # Ajuste google-chrome
+        clear
+        echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
+        echo -e "$BR╰──> $BG$"$NONE" A atualização dos pacotes deb foi finalizada!"
+fi
+        clear
+        echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
+        echo -e "$BR╰──> $BG$"$NONE" sudo apt full-upgrade --assume-yes"
+########################################################################
+# ╭────╮
+# │ 03 │ Ajuste de possível erro que aconte após instalar
+# ╰────╯ os pacotes relacionados ao kernel que causa:
+#        E: Sub-process /usr/bin/dpkg returned an error code (1)
+#
+# Obtém a data atual no formato "aaaa-mm-dd"
+data_atual=$(date +%Y-%m-%d)
+
+# Lista de palavras2 a serem procurados
+palavras2=("linux-base" "linux-compiler-gcc" "linux-firmware" "linux-headers" "linux-image" "linux-image-extra" "linux-kbuild" "linux-libc-dev" "initramfs-tools")
+
+# Arquivo de log a ser pesquisado
+arquivo_log="/var/log/dpkg.log"
+
+# Inicializa uma variável para indicar se algum termo foi encontrado
+encontrado=false
+
+# Loop pelos palavras2
+verificar_corrigir_atualizar() {
+    local encontrado=false
+
+    for termo in "${palavras2[@]}"; do
+        if grep -q "$data_atual.*$termo" "$arquivo_log"; then
+            # Parte 1: Preparação
+            sudo dpkg --configure -a
+            sudo mv /var/lib/dpkg/info /var/lib/dpkg/backup-info
+            sudo mkdir /var/lib/dpkg/info 2> /dev/null
+            sudo apt clean
+            sudo apt install --fix-broken --assume-yes
+
+            # Parte 2: Reposição e atualização
+            # Move arquivo e possíveis subdiretórios de /var/lib/dpkg/info para /var/lib/dpkg/backup-info
+            sudo find /var/lib/dpkg/info -mindepth 1 -exec mv -t /var/lib/dpkg/backup-info {} +
+            # Move arquivo e possíveis subdiretórios de /var/lib/dpkg/backup-info para /var/lib/dpkg/info
+            sudo find /var/lib/dpkg/backup-info -mindepth 1 -exec mv -t /var/lib/dpkg/info {} +
+            sudo rm /var/lib/dpkg/backup-info -rf
+            sudo apt update
+            sudo echo "y" | sudo apt full-upgrade --assume-yes
+            
+            # Parte 3: Atualização do grub
+            sudo update-grub
+            sudo apt clean
+            encontrado=true
+            break  # Interrompe a pesquisa após o primeiro termo encontrado
+        fi
+    done
+
+    if [ "$encontrado" = false ]; then
+        # Ajuste google-chrome
+        clear
+        echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
+        echo -e "$BR╰──> $BG$"$NONE" A atualização dos pacotes deb foi finalizada!"
+    fi
+}
+
+# Chamar a função
+verificar_corrigir_atualizar
+########################################################################
+# ╭────╮
+# │ 04 │ Verifica a existência da linha:
+# ╰────╯ "Error: Sub-process /usr/bin/dpkg returned an error code (1)"
+#        na data atual, caso confirmado executa verificar_corrigir_atualizar 
+#        caso não tenha executado antes 
+# 
+# Verificar o arquivo history.log
+data_atual=$(date +%Y-%m-%d)
+error_found=false
+verificacao_executada=false
+
+# Loop pelos blocos no arquivo history.log
+while IFS= read -r line; do
+    if [[ $line == "Start-Date: $data_atual"* ]]; then
+        block_found=true
+        block="$line"
+    elif [[ $line == "End-Date: $data_atual" && $block_found == true ]]; then
+        block="$block\n$line"
+        if echo -e "$block" | grep -q "Error: Sub-process /usr/bin/dpkg returned an error code (1)"; then
+            error_found=true
+            break
+        fi
+        block_found=false
+    elif [[ $block_found == true ]]; then
+        block="$block\n$line"
+    fi
+done < "/var/log/apt/history.log"
+
+# Se erro encontrado e a função ainda não foi executada, executar a função novamente
+if [ "$error_found" = true ] && [ "$verificacao_executada" = false ]; then
+    # Chamar a função verificar_corrigir_atualizar
+    verificar_corrigir_atualizar
+    echo "Correções"
+    verificacao_executada=true
+fi
+
+########################################################################
+# ╭────╮
+# │ 05 │ Categoria FLATPAK USER
+# ╰────╯ 
+#
+# Verifica se o comando 'flatpak' está disponível
+if command -v flatpak &>/dev/null; then
+    clear
+    echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
+    echo -e "$BR╰──> $BG$"$NONE" Atualização flatpak user"
+    echo "y" | flatpak update -y --user
+    clear
+    echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
+    echo -e "$BR╰──> $BG$"$NONE" Remoção de possíveis pacotes flatpaks não utilizados"
+    sudo echo "y" | flatpak uninstall -y --unused
+    sleep 3
+else
+    clear
+    echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
+    echo -e "$BR╰──> $BG$"$NONE" flatpak não está instalado."
+fi
+
+########################################################################
+# ╭────╮
+# │ 06 │ Categoria FLATPAK SYSTEM
+# ╰────╯ 
+#
+
+if command -v flatpak &>/dev/null; then
+    clear
+    echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
+    echo -e "$BR╰──> $BG$"$NONE" Atualização flatpak user"
+    echo "y" | flatpak update -y --system
+    clear
+    echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
+    echo -e "$BR╰──> $BG$"$NONE" Remoção de possíveis pacotes flatpaks não utilizados"
+    sudo echo "y" | flatpak uninstall -y --unused
+    sudo flatpak repair
+    sleep 3
+else
+    clear
+    echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
+    echo -e "$BR╰──> $BG$"$NONE" flatpak não está instalado."
+fi
+
+########################################################################
+# ╭────╮
+# │ 07 │ Categoria SNAPS
+# ╰────╯ 
+# 
+# Verifica se o comando 'snap' está disponível
+
+if command -v snapd &>/dev/null; then
+    clear
+    echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
+    echo -e "$BR╰──> $BG$"$NONE" Atualização snap" 
+    sudo snap refresh
+    
+# Definir o número máximo de revisões de um snap para 2 (o padrão é 3)
+    clear
+    echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
+    echo -e "$BR╰──> $BG$"$NONE" sudo snap set system refresh.retain=2" 
+    sudo snap set system refresh.retain=2
+    clear
+    echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
+    echo -e "$BR╰──> $BG$"$NONE" Remoção de possíveis revisões antigas de snaps"
+# Remove possíveis revisões antigas de snaps
+# CLOSE ALL SNAPS BEFORE RUNNING THIS (INGLÊS)
+    set -eu
+
+    LANG=en_US.UTF-8 snap list --all | awk '/disabled/{print $1, $3}' |
+        while read snapname revision; do
+           snap remove "$snapname" --revision="$revision"
+        done
+    
+# Removes old revisions of snaps
+# CLOSE ALL SNAPS BEFORE RUNNING THIS (PORTUGUÊS DO BRASIL)
+    set -eu
+
+    LANG=pt_BR.UTF-8 snap list --all | awk '/disabled/{print $1, $3}' |
+        while read snapname revision; do
+            snap remove "$snapname" --revision="$revision"        
+        done
+    sleep 3;
+    
+# 
+# Limpeza do cache do snapd
+# 
+    clear
+    echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
+    echo -e "$BR╰──> $BG$"$NONE" Limpeza do cache do snapd" 
+    sudo sh -c 'rm -rf /var/lib/snapd/cache/*'
+    
+else
+    clear
+    echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
+    echo -e "$BR╰──> $BG$"$NONE" Snap não está instalado."
+fi
+
+########################################################################
+# ╭────╮
+# │ 08 │ Categoria journal
+# ╰────╯ 
+#
+    clear
+    echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~" 
+    echo -e "$BR╰──> $BG$"$NONE" Redução logs journal a 50mb de limite" 
+    sudo journalctl --vacuum-size=50M -q
+    sleep 3;
+    
+clear
+########################################################################
+# 
+# ╭────╮
+# │ 09 │ Exibição do logotipo do Debian
+# ╰────╯ 
+#
+# Informação de "Atualização finalizada de cordo com as cores do bash"
+# Parte 1
+comprimento_da_primeira_linha_PS1=$(echo "╭─[$USER]@[${HOSTNAME%%.*}]:~" | wc -m)
+
+# Obtém o tamanho do terminal
+terminal_width=$(tput cols)
+
+# Segunda linha
+line1="─$(printf '─%.0s' $(seq 1 $((terminal_width - $comprimento_da_primeira_linha_PS1))))─╮"
+
+# Imprime a segunda linha
+echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$BR$line1"
+
+#########
+line2="─$(printf '─%.0s' $(seq 1 $((terminal_width - 7))))╮ │"
+echo -e "│ ╭$line2"
+#########
+
+# Parte 2
+# Logotipo Debian
+largura_terminal=$(tput cols)  # Obtém a largura do terminal em colunas
+
+palavras=(
+    "       _,met\$\$\$\$\$gg.       "
+    "    ,g\$\$\$\$\$\$\$\$\$\$\$\$\$\$\$P.    "
+    "  ,g\$\$P\"     \"\"\"Y\$\$.\".     "
+    " ,\$\$P\'              \`\$\$\$.  "
+    "',\$\$P       ,ggs.     \`\\$\$b:"
+    "\`d\$\$'     ,\$P\"'   .    \$\$\$ "
+    " \$\$P      d\$'     ,    \$\$P "
+    " \$\$:      \$\$.   -    ,d\$\$' "
+    " \$\$;      Y\$b._   _,d\$P'   "
+    " \$Y\$\$.    \`.\`\"Y\$\$\$\$P\"'      "
+    " \`d\$\$b      \"-.__           "
+    "  \`Y\$\$                     "
+    "   \`Y\$\$.                   "
+    "     \`d\$\$.                 "
+    "       \`Y\$\$b.              "
+    "          \"\`Y\$b._          "
+    "             \`\"\"\"         "
+)
+
+for palavra in "${palavras[@]}"; do
+    # Calcula o número de espaços à esquerda e à direita da palavra
+    espacos_total=$((largura_terminal - ${#palavra} - 6))  # Subtrai 2 para as barras verticais
+    espacos_esquerda=$((espacos_total / 2))
+    espacos_direita=$((espacos_total - espacos_esquerda))
+
+    # Monta a linha formatada com as barras verticais
+    linha_formatada="│ │$(printf '%*s' $espacos_esquerda)${palavra}$(printf '%*s' $espacos_direita)│ │"
+
+    echo -e "$BR$linha_formatada"
+done
+
+# Parte 3
+
+#!/bin/bash
+
+# Obtém o tamanho do terminal
+terminal_width=$(tput cols)
+
+# Texto que você deseja inserir
+text="Debian GNU/Linux"
+
+# Calcula o número de caracteres "-" para formar o divisor à esquerda
+left_divider_length=$(( (terminal_width - ${#text}) / 2 - 5 ))
+left_divider=$(printf '─%.0s' $(seq 1 $left_divider_length))
+
+# Calcula o número de caracteres "-" para formar o divisor à direita
+right_divider_length=$(( terminal_width - ${#text} - ${#left_divider} - 4 - ${#left_divider} - 1 ))
+right_divider=$(printf '─%.0s' $(seq 1 $right_divider_length))
+
+# Calcula o número de caracteres "-" para preencher a linha totalmente à direita
+full_line_divider_length=$(( terminal_width - ${#text} - ${#left_divider} - ${#right_divider} - 5 ))
+full_line_divider=$(printf '─%.0s' $(seq 1 $full_line_divider_length))
+
+# Imprime a linha resultante totalmente preenchida
+if ((terminal_width % 2 == 0)); then
+    # Número par - Imprime a linha resultante totalmente preenchida
+    echo -e "$BR│ ╰$left_divider[$BO $text $BR]$full_line_divider╯ │"
+else
+    # Número ímpar - Imprime a linha resultante com mais um divisor de linha
+    echo -e "$BR│ ╰$left_divider[$BO $text $BR]$full_line_divider─╯ │"
+fi
+
+######### linha final
+line3="─$(printf '─%.0s' $(seq 1 $((terminal_width - 7))))──╯"
+echo -e "╰──$line3"
+#########
+#############################################################
