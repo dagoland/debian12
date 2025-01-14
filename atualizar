@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 #### Script criado por Dagoberto S. Araújo ####
-####         para sistemas Debian          #### 
+####         para sistemas Debian          ####
 ####        Atualização do sistema         ####
 
 #===========================================
@@ -42,12 +42,22 @@ BGW="\033[47m" # White (Branco)
 ## Cores extras
 BO="\033[1;38;5;214m" # Bold+Orange (Negrito+Laranja)
 BP="\033[1;38;5;93m" # Bold+Purple (Negrito+Roxo)
+# BD="\033[38;2;206;0;88m" #CE0058 - Cor da Logo do Debian (PANTONE Rubine Red C)
+BD="\033[38;2;255;84;84m" #ff5454
 
+# Relógio do Sistema e Hardware Desalinhados: Linux usa dois relógios: o relógio do sistema (software) e o relógio de hardware (BIOS/UEFI). Às vezes, eles podem não estar sincronizados. Para sincronizá-los:
+    sudo hwclock --systohc
+# Verificação e Inicialização do Controle de Volume no MATE Desktop 
+    if command -v mate-panel &>/dev/null; then
+        (mate-volume-control-status-icon > /dev/null 2>&1 &)
+    else
+        tput clear
+    fi
 ########################################################################
 # ╭────╮
 # │ 01 │ Categoria pacotes DEB
-# ╰────╯ 
-    clear
+# ╰────╯
+    tput clear
     echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
     echo -e "$BR╰──> $BG$"$NONE" sudo apt update"
     if command -v nala &> /dev/null
@@ -56,10 +66,10 @@ BP="\033[1;38;5;93m" # Bold+Purple (Negrito+Roxo)
     else
         sudo apt update;
     fi
-    clear
+    tput clear
     echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
     echo -e "$BR╰──> $BG$"$NONE" Atualização de pacotes deb"
-    clear
+    tput clear
     echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
     echo -e "$BR╰──> $BG$"$NONE" sudo apt upgrade --assume-yes"
     if command -v nala &> /dev/null
@@ -69,7 +79,7 @@ BP="\033[1;38;5;93m" # Bold+Purple (Negrito+Roxo)
         sudo apt upgrade --assume-yes;
     fi
     sudo dpkg --configure -a;
-    clear
+    tput clear
     echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
     echo -e "$BR╰──> $BG$"$NONE" sudo apt autoremove --assume-yes"
     if command -v nala &> /dev/null
@@ -79,7 +89,7 @@ BP="\033[1;38;5;93m" # Bold+Purple (Negrito+Roxo)
         sudo apt autoremove --assume-yes;
     fi
 # echo Limpeza no diretório /var/cache/apt/archives/;
-    clear
+    tput clear
     echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
     echo -e "$BR╰──> $BG$"$NONE" Limpeza no diretório /var/cache/apt/archives/"
     if command -v nala &> /dev/null
@@ -88,14 +98,14 @@ BP="\033[1;38;5;93m" # Bold+Purple (Negrito+Roxo)
     else
         sudo apt clean;
     fi
-    clear
+    tput clear
     echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
     echo -e "$BR╰──> $BG$"$NONE" ajustes"
 ########################################################################
 # ╭────╮
 # │ 02 │ Ajuste de google-chrome-stable para google-chrome
 # ╰────╯ para evitar ícone duplicado no cairo-dock
-# 
+#
 # Obtém a data atual no formato "aaaa-mm-dd"
 data_atual=$(date +%Y-%m-%d)
 
@@ -119,13 +129,13 @@ for termo in "${palavras1[@]}"; do
 done
 
 if [ "$encontrado" = false ]; then
-        
+
         # Ajuste google-chrome
-        clear
+        tput clear
         echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
         echo -e "$BR╰──> $BG$"$NONE" A atualização dos pacotes deb foi finalizada!"
 fi
-        clear
+        tput clear
         echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
         echo -e "$BR╰──> $BG$"$NONE" sudo apt full-upgrade --assume-yes"
 ########################################################################
@@ -167,7 +177,7 @@ verificar_corrigir_atualizar() {
             sudo rm /var/lib/dpkg/backup-info -rf
             sudo apt update
             sudo echo "y" | sudo apt full-upgrade --assume-yes
-            
+
             # Parte 3: Atualização do grub
             sudo update-grub
             sudo apt clean
@@ -178,7 +188,7 @@ verificar_corrigir_atualizar() {
 
     if [ "$encontrado" = false ]; then
         # Ajuste google-chrome
-        clear
+        tput clear
         echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
         echo -e "$BR╰──> $BG$"$NONE" A atualização dos pacotes deb foi finalizada!"
     fi
@@ -190,9 +200,9 @@ verificar_corrigir_atualizar
 # ╭────╮
 # │ 04 │ Verifica a existência da linha:
 # ╰────╯ "Error: Sub-process /usr/bin/dpkg returned an error code (1)"
-#        na data atual, caso confirmado executa verificar_corrigir_atualizar 
-#        caso não tenha executado antes 
-# 
+#        na data atual, caso confirmado executa verificar_corrigir_atualizar
+#        caso não tenha executado antes
+#
 # Verificar o arquivo history.log
 data_atual=$(date +%Y-%m-%d)
 error_found=false
@@ -226,21 +236,21 @@ fi
 ########################################################################
 # ╭────╮
 # │ 05 │ Categoria FLATPAK USER
-# ╰────╯ 
+# ╰────╯
 #
 # Verifica se o comando 'flatpak' está disponível
 if command -v flatpak &>/dev/null; then
-    clear
+    tput clear
     echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
     echo -e "$BR╰──> $BG$"$NONE" Atualização flatpak user"
     echo "y" | flatpak update -y --user
-    clear
+    tput clear
     echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
     echo -e "$BR╰──> $BG$"$NONE" Remoção de possíveis pacotes flatpaks não utilizados"
     sudo echo "y" | flatpak uninstall -y --unused
     sleep 3
 else
-    clear
+    tput clear
     echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
     echo -e "$BR╰──> $BG$"$NONE" flatpak não está instalado."
 fi
@@ -248,45 +258,120 @@ fi
 ########################################################################
 # ╭────╮
 # │ 06 │ Categoria FLATPAK SYSTEM
-# ╰────╯ 
+# ╰────╯
 #
 
 if command -v flatpak &>/dev/null; then
-    clear
+    tput clear
     echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
     echo -e "$BR╰──> $BG$"$NONE" Atualização flatpak user"
     echo "y" | flatpak update -y --system
-    clear
+    tput clear
     echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
     echo -e "$BR╰──> $BG$"$NONE" Remoção de possíveis pacotes flatpaks não utilizados"
     sudo echo "y" | flatpak uninstall -y --unused
     sudo flatpak repair
     sleep 3
 else
-    clear
+    tput clear
     echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
+    echo -e "$BR╰──> $BG$"$NONE" flatpak não está instalado."
+fi
+
+#!/bin/bash
+
+########################################################################
+# ╭────╮
+# │ 07 │ Categoria FLATPAK USER e SYSTEM
+# ╰────╯ Ajuste do tema do cursor do mouse nos plicativos flatpak
+#
+# Função para encontrar o caminho do tema do cursor
+find_cursor_theme_path() {
+    local cursor_theme=$1
+    find /usr/share/icons /usr/local/share/icons ~/.icons -type d -name "$cursor_theme"
+}
+
+# Verifica se o comando 'flatpak' está disponível
+if command -v flatpak &>/dev/null; then
+    # Detecta o ambiente de desktop e obtém o tema do cursor
+    if [ "$XDG_CURRENT_DESKTOP" = "GNOME" ]; then
+        cursor_theme=$(gsettings get org.gnome.desktop.interface cursor-theme | tr -d "'")
+    elif [ "$XDG_CURRENT_DESKTOP" = "MATE" ]; then
+        cursor_theme=$(gsettings get org.mate.peripherals-mouse cursor-theme | tr -d "'")
+    elif [ "$XDG_CURRENT_DESKTOP" = "KDE" ]; then
+        cursor_theme=$(kreadconfig5 --group "Icons" --key "cursorTheme")
+    elif [ "$XDG_CURRENT_DESKTOP" = "LXDE" ]; then
+        cursor_theme=$(grep 'Inherits=' ~/.config/lxsession/LXDE/desktop.conf | cut -d'=' -f2)
+    elif [ "$XDG_CURRENT_DESKTOP" = "LXQt" ]; then
+        cursor_theme=$(lxqt-config -d | grep 'Cursor theme' | cut -d':' -f2 | tr -d ' ')
+    elif [ "$XDG_CURRENT_DESKTOP" = "XFCE" ]; then
+        cursor_theme=$(xfconf-query -c xsettings -p /Gtk/CursorThemeName)
+    elif [ "$XDG_CURRENT_DESKTOP" = "X-Cinnamon" ]; then
+        cursor_theme=$(gsettings get org.cinnamon.desktop.interface cursor-theme | tr -d "'")
+    else
+    tput clear
+    echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
+    echo -e "$BR╰──> $BG$"$NONE" Ambiente de desktop não suportado ou não detectado."
+        sleep 1
+    fi
+
+    # Encontra o caminho do tema do cursor
+    theme_path=$(find_cursor_theme_path "$cursor_theme")
+
+    # Verifica se o caminho do tema do cursor foi encontrado
+    if [ -z "$theme_path" ]; then
+    tput clear
+    echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
+    echo -e "$BR╰──> $BG$"$NONE" O tema do cursor do mouse '$cursor_theme' não foi encontrado no sistema de arquivos."
+        sleep 1
+    fi
+
+    # Lista dos IDs dos flatpaks instalados
+    flatpaks=$(flatpak list --app --columns=application | cat)
+
+    # Gera e executa os comandos flatpak override (--user)
+    tput clear
+    echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
+    echo -e "$BR╰──> $BG$"$NONE" Ajuste do tema do cursor do mouse nos plicativos flatpak --user"
+    for app in $flatpaks; do
+        command_user="flatpak --user override $app --filesystem=$theme_path"
+        echo "Executando: $command_user"
+        eval $command_user 2> /dev/null
+    done
+    # Gera e executa os comandos flatpak override (--system)
+    tput clear
+    echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
+    echo -e "$BR╰──> $BG$"$NONE" Ajuste do tema do cursor do mouse nos plicativos flatpak --system"
+    for app in $flatpaks; do
+        command_system="flatpak --system override $app --filesystem=$theme_path"
+        echo "Executando: $command_system"
+        eval $command_system 2> /dev/null
+    done
+else
+    tput clear
+    echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"    
     echo -e "$BR╰──> $BG$"$NONE" flatpak não está instalado."
 fi
 
 ########################################################################
 # ╭────╮
-# │ 07 │ Categoria SNAPS
-# ╰────╯ 
-# 
+# │ 08 │ Categoria SNAPS
+# ╰────╯
+#
 # Verifica se o comando 'snap' está disponível
 
 if command -v snapd &>/dev/null; then
-    clear
+    tput clear
     echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
     echo -e "$BR╰──> $BG$"$NONE" Atualização snap" 
     sudo snap refresh
-    
+
 # Definir o número máximo de revisões de um snap para 2 (o padrão é 3)
-    clear
+    tput clear
     echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
     echo -e "$BR╰──> $BG$"$NONE" sudo snap set system refresh.retain=2" 
     sudo snap set system refresh.retain=2
-    clear
+    tput clear
     echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
     echo -e "$BR╰──> $BG$"$NONE" Remoção de possíveis revisões antigas de snaps"
 # Remove possíveis revisões antigas de snaps
@@ -297,60 +382,297 @@ if command -v snapd &>/dev/null; then
         while read snapname revision; do
            snap remove "$snapname" --revision="$revision"
         done
-    
+
 # Removes old revisions of snaps
 # CLOSE ALL SNAPS BEFORE RUNNING THIS (PORTUGUÊS DO BRASIL)
     set -eu
 
     LANG=pt_BR.UTF-8 snap list --all | awk '/disabled/{print $1, $3}' |
         while read snapname revision; do
-            snap remove "$snapname" --revision="$revision"        
+            snap remove "$snapname" --revision="$revision"
         done
     sleep 3;
-    
-# 
+
+#
 # Limpeza do cache do snapd
-# 
-    clear
+#
+    tput clear
     echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
-    echo -e "$BR╰──> $BG$"$NONE" Limpeza do cache do snapd" 
+    echo -e "$BR╰──> $BG$"$NONE" Limpeza do cache do snapd"
     sudo sh -c 'rm -rf /var/lib/snapd/cache/*'
-    
+
 else
-    clear
+    tput clear
     echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
     echo -e "$BR╰──> $BG$"$NONE" Snap não está instalado."
 fi
 
 ########################################################################
 # ╭────╮
-# │ 08 │ Categoria journal
-# ╰────╯ 
+# │ 09 │ Categoria journal
+# ╰────╯
 #
-    clear
-    echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~" 
-    echo -e "$BR╰──> $BG$"$NONE" Redução logs journal a 50mb de limite" 
+    tput clear
+    echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
+    echo -e "$BR╰──> $BG$"$NONE" Redução logs journal a 50mb de limite"
     sudo journalctl --vacuum-size=50M -q
     sleep 3;
-    
-clear
+
+tput clear
+
 ########################################################################
-# 
 # ╭────╮
-# │ 09 │ Exibição do logotipo do Debian
-# ╰────╯ 
+# │ 10 │ Categoria yt-dlp
+# ╰────╯
+#
+# Verifica se o yt-dlp está instalado
+if command -v yt-dlp > /dev/null 2>&1; then
+    echo "Atualizando yt-dlp..."
+    sudo yt-dlp -U > /dev/null 2>&1 &
+    echo "yt-dlp está sendo atualizado em segundo plano."
+else
+    echo "yt-dlp não está instalado. Nenhuma ação necessária."
+fi
+tput clear
+
+########################################################################
+# ╭────╮
+# │ 11 │ Sincronização com o horário de Brasília
+# ╰────╯
+#
+    tput clear
+    echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
+    echo -e "$BR╰──> $BG$"$NONE" Sincronização com o horário de Brasília"
+
+# Verifica se o arquivo existe
+if [ -f /tmp/unix_time_page.txt ]; then
+  # Remove o arquivo
+  sudo rm /tmp/unix_time_page.txt
+fi
+
+# Verifica a conectividade com o wget
+wget -q --spider https://www.google.com
+
+if [ $? -eq 0 ]; then
+  echo "Data e Hora Atual do Sistema:"
+
+  # Calcula o tempo de download em segundos com três casas decimais
+  tempo=$( (time wget --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36" -O /tmp/unix_time_page.txt https://time.is/en/Unix_time) 2>&1 | grep real | awk '{print $2}' | sed 's/m/:/; s/s//' | awk -F: '{printf "%.3f\n", ($1 * 60) + $2}' )
+
+  # Substitui vírgula por ponto
+  tempo=$(echo $tempo | sed 's/,/./')
+
+  # Obtém o valor de timestamp Unix a partir do download de /tmp/unix_time_page.txt
+  horario_local=$(grep -oP '(?<=<time id="clock">).*?(?=</time>)' /tmp/unix_time_page.txt)
+
+  # Verifica se o horário_local está vazio ou não é um número válido
+  if [[ -z "$horario_local" || ! "$horario_local" =~ ^[0-9]+$ ]]; then
+    echo "Erro ao obter o horário local. Verifique o arquivo baixado."
+    exit 1
+  fi
+
+  # Horário local atual é horário_local + tempo de download do arquivo
+  horario_local_atual=$(echo "$tempo + $horario_local" | bc)
+
+  # Converta o timestamp Unix para data e hora
+  # date -d @$horario_local_atual
+
+  # Defina a data e hora do sistema
+  sudo date -s "@$horario_local_atual"
+
+  # Atualize o relógio do hardware
+  sudo hwclock --systohc
+
+  # Remove o arquivo baixado
+  sudo rm /tmp/unix_time_page.txt
+
+else
+  echo "Sem conexão com a internet"
+fi
+sleep 1;
+# Verifica se o comando 'mate-panel' está disponível
+if command -v mate-panel &>/dev/null; then
+    tput clear
+    echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
+    echo -e "$BR╰──> $BG$"$NONE" Reinicia mate-panel após atualização do horário"
+    echo "mate-panel instalado"
+    (killall mate-panel > /dev/null 2>&1 &)
+    sleep 1
+    (mate-panel --replace > /dev/null 2>&1 &)
+    # Ícone de volume no painel do mate
+    (mate-volume-control-status-icon > /dev/null 2>&1 &)
+    tput clear
+else
+    tput clear
+    echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
+    echo -e "$BR╰──> $BG$"$NONE" mate-panel não instalado"
+fi
+tput clear
+########################################################################
+#
+# ╭────╮
+# │ 12 │ Comandos_para_recupeção_do_GRUB
+# ╰────╯
+#
+echo -n -e "\033[?25l" # para tornar o cursor invisível sem adicionar uma nova linha no terminal.
+create_grub_recovery_file() {
+    COR_NONE="\\033[0m" # Eliminar as Cores, deixar padrão)
+    COR_BR="\\033[1;31m" # Cor_Bold+Red (Negrito+Vermelho)
+    COR_BG="\\033[1;32m" # Cor_Bold+Green (Negrito+Verde)
+    COR_BY="\\033[1;33m" # Cor_Bold+Yellow (Negrito+Amarelo)
+    COR_BS="\\033[1;38;5;39m" # Cor_Bold+Azul (Negrito Azul Saturado)
+    COR_BO="\\033[1;38;5;214m" # Cor_Bold+Orange (Negrito+Laranja)
+   
+    # Nome do arquivo auxiliar
+    local file="/boot/Comandos_para_recupeção_do_GRUB.txt"
+
+    # Cria o arquivo auxiliar para recuperação do GRUB
+    sudo touch "$file"
+    
+    # ╭────────────────────────────────────────╮
+    # │ Obtenção de localização do GRUB e UUID │
+    # ╰────────────────────────────────────────╯
+    # Obtém o dispositivo onde o GRUB está instalado
+    local device_grub=$(sudo grub-probe -t device /boot/grub)
+    # Obtém o UUID do dispositivo onde o GRUB está instalado
+    local uuid_grub=$(sudo blkid -s UUID -o value "$device_grub")
+
+    # Adiciona informações do GRUB ao arquivo
+    sudo bash -c "echo -e \"$COR_BR╭──────────────────────────────╮$COR_NONE\" >> $file"
+    sudo bash -c "echo -e \"$COR_BR│$COR_NONE\" Local de instalação do GRUB: \"$COR_BR│$COR_NONE\" >> $file"
+    sudo bash -c "echo -e \"$COR_BR╰──────────────────────────────╯$COR_NONE\" >> $file"
+    sudo bash -c "echo 'Device grub: $device_grub' >> $file"
+    sudo bash -c "echo 'UUID: $uuid_grub' >> $file"
+    sudo sh -c "echo >> $file"
+
+    # ╭─────────────────────────────────────────────────╮
+    # │ Obtenção de localização do vmlinuz e initrd.img │
+    # ╰─────────────────────────────────────────────────╯
+    sudo bash -c "echo -e \"$COR_BO╭───────────────────────────────────────────╮$COR_NONE\" >> $file"
+    sudo bash -c "echo -e \"$COR_BO│$COR_NONE\" Local de instalação dos arquivos vmlinuz: \"$COR_BO│$COR_NONE\" >> $file"
+    sudo bash -c "echo -e \"$COR_BO╰───────────────────────────────────────────╯$COR_NONE\" >> $file"
+    sudo sh -c "ls /boot/vmlinuz-* >> $file"
+    sudo sh -c "echo >> $file"
+    sudo bash -c "echo -e \"$COR_BY╭──────────────────────────────────────────────╮$COR_NONE\" >> $file"
+    sudo bash -c "echo -e \"$COR_BY│$COR_NONE\" Local de instalação dos arquivos initrd.img: \"$COR_BY│$COR_NONE\" >> $file"
+    sudo bash -c "echo -e \"$COR_BY╰──────────────────────────────────────────────╯$COR_NONE\" >> $file"
+    sudo sh -c "ls -lt /boot/initrd.img-* | awk '{print \$NF}' >> $file"
+    sudo sh -c "echo >> $file"
+
+    # ╭────────────────────────────────────────╮
+    # │ Obtenção de localização do root e UUID │
+    # ╰────────────────────────────────────────╯
+    local device_root=$(sudo grub-probe -t device /)
+    local uuid_root=$(sudo blkid -s UUID -o value "$device_root")
+
+    # Adiciona informações do root ao arquivo
+    sudo bash -c "echo -e \"$COR_BG╭──────────────────────────────╮$COR_NONE\" >> $file"
+    sudo bash -c "echo -e \"$COR_BG│$COR_NONE\" Local de instalação do root: \"$COR_BG│$COR_NONE\" >> $file"
+    sudo bash -c "echo -e \"$COR_BG╰──────────────────────────────╯$COR_NONE\" >> $file"
+    sudo bash -c "echo 'Device root: $device_root' >> $file"
+    sudo bash -c "echo 'UUID: $uuid_root' >> $file"
+    sudo sh -c "echo >> $file"
+
+    # ╭───────────────────────────────────────────────────╮
+    # │ Exemplo de uso do comandos para recupeção do GRUB │
+    # ╰───────────────────────────────────────────────────╯
+    # Versões mais recentes
+    local vmlinuz_file_mais_recente=$(ls -lt /boot/vmlinuz-* | head -n 1 | awk '{print $NF}')
+    local initrd_file_mais_recente=$(ls -lt /boot/initrd.img-* | head -n 1 | awk '{print $NF}')
+    # Versões anteriores
+    local vmlinuz_file_versao_anterior=$(ls -lt /boot/vmlinuz-* | head -n 2 | tail -n 1 | awk '{print $NF}')
+    local initrd_file_versao_anterior=$(ls -lt /boot/initrd.img-* | head -n 2 | tail -n 1 | awk '{print $NF}')
+    
+    sudo bash -c "echo '                                   EXEMPLOS' >> $file"
+    sudo bash -c "echo '' >> $file"
+    sudo bash -c "echo -e \"$COR_BS╭─────────────────────────────────────────────────────────────────────────────╮$COR_NONE\" >> $file"
+    sudo bash -c "echo -e \"$COR_BS│$COR_NONE\" Conferir a partição, pode ser \(hd0,msdos1\), \(hd0,msdos2\), \(hd0,msdos3\) etc. \"$COR_BS│$COR_NONE\" >> $file"
+    sudo bash -c "echo -e \"$COR_BS│$COR_NONE\" Exemplo de comandos a serem digitado no shell do GRUB:'                      '\"$COR_BS│$COR_NONE\" >> $file"
+    sudo bash -c "echo -e \"$COR_BS╰─────────────────────────────────────────────────────────────────────────────╯$COR_NONE\" >> $file"
+    sudo bash -c "echo 'grub> linux (hd0,msdos3)$vmlinuz_file_mais_recente root=$uuid_root ro quiet' >> $file"
+    sudo bash -c "echo 'grub> initrd (hd0,msdos3)$initrd_file_mais_recente' >> $file"
+    sudo bash -c "echo 'grub> boot' >> $file"
+    sudo bash -c "echo '' >> $file"
+    sudo bash -c "echo '                                      ou' >> $file"
+    sudo bash -c "echo '' >> $file"
+    sudo bash -c "echo 'grub> linux (hd0,msdos3)$vmlinuz_file_mais_recente $device_root' >> $file"
+    sudo bash -c "echo 'grub> initrd (hd0,msdos3)$initrd_file_mais_recente' >> $file"
+    sudo bash -c "echo 'grub> boot' >> $file"
+    sudo bash -c "echo '' >> $file"
+    sudo bash -c "echo -e \"$COR_BS╭──────────────────────────────────────────────────────────────────────╮$COR_NONE\" >> $file"
+    sudo bash -c "echo -e \"$COR_BS│$COR_NONE\" Você também pode testar com outras versões do vmlinuz e initrd, veja:\"$COR_BS│$COR_NONE\" >> $file"
+    sudo bash -c "echo -e \"$COR_BS╰──────────────────────────────────────────────────────────────────────╯$COR_NONE\" >> $file"
+    sudo bash -c "echo '' >> $file"
+    sudo bash -c "echo 'grub> linux (hd0,msdos3)$vmlinuz_file_versao_anterior root=$uuid_root ro quiet' >> $file"
+    sudo bash -c "echo 'grub> initrd (hd0,msdos3)$initrd_file_versao_anterior' >> $file"
+    sudo bash -c "echo 'grub> boot' >> $file"
+    sudo bash -c "echo '' >> $file"
+    sudo bash -c "echo '                                      ou' >> $file"
+    sudo bash -c "echo '' >> $file"
+    sudo bash -c "echo 'grub> linux (hd0,msdos3)$vmlinuz_file_versao_anterior $device_root' >> $file"
+    sudo bash -c "echo 'grub> initrd (hd0,msdos3)$initrd_file_versao_anterior' >> $file"
+    sudo bash -c "echo 'grub> boot' >> $file"
+    sudo bash -c "echo '' >> $file"
+}
+# Função para a animação de "processando"
+spinner() {
+    local chars=("⣆" "⡇" "⠏" "⠛" "⠹" "⢸" "⣰" "⣤")
+    
+    # Imprime a parte estática
+    echo -en "${BR}╚══⟫ $BG\$${NONE}${BG}${NONE} "
+    
+    # Salva a posição do cursor após a parte estática
+    tput sc
+    
+    while kill -0 "$1" 2>/dev/null; do
+        for i in "${chars[@]}"; do
+            # Restaura posição do cursor
+            tput rc
+            # Imprime apenas o caractere de animação e "Processando"
+            echo -en "$i Processing…"
+            sleep 0.1
+        done
+    done
+    
+    # Limpa a linha final
+    tput rc
+    tput el
+}
+# Usa o comando script para capturar a saída colorida e iniciar a animação
+# Verifica se o arquivo existe e toma as ações necessárias
+if [ -f /boot/Comandos_para_recupeção_do_GRUB.txt ]; then
+    # echo "Arquivo existente. Removendo..."
+    sudo rm /boot/Comandos_para_recupeção_do_GRUB.txt
+    create_grub_recovery_file &
+else
+    # echo "Arquivo não encontrado. Criando..."
+    create_grub_recovery_file &
+fi
+command_pid=$!
+echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$B:~"
+##### ╰──> $
+spinner $command_pid & # Inicia o spinner em segundo plano e
+spinner_pid=$!         # o associa ao PID do comando apt
+
+# Aguarda o término do comando apt
+wait $command_pid
+
+# Encerra o spinner
+kill $spinner_pid
+
+echo -n -e "\033[?25h" # para desfazer a ação de tornar o cursor invisível e restaurá-lo, você pode usar
+tput clear
+########################################################################
+#
+# ╭────╮
+# │ 13 │ Exibição do logotipo do Debian
+# ╰────╯
 #
 # Informação de "Atualização finalizada de cordo com as cores do bash"
 # Parte 1
 comprimento_da_primeira_linha_PS1=$(echo "╭─[$USER]@[${HOSTNAME%%.*}]:~" | wc -m)
-
-# Obtém o tamanho do terminal
 terminal_width=$(tput cols)
-
-# Segunda linha
 line1="─$(printf '─%.0s' $(seq 1 $((terminal_width - $comprimento_da_primeira_linha_PS1))))─╮"
-
-# Imprime a segunda linha
 echo -e "$BR╭─[$BG$USER$BR]$BY@$BR[$BO${HOSTNAME%%.*}$BR]$BR$line1"
 
 #########
@@ -358,70 +680,71 @@ line2="─$(printf '─%.0s' $(seq 1 $((terminal_width - 7))))╮ │"
 echo -e "│ ╭$line2"
 #########
 
-# Parte 2
-# Logotipo Debian
-largura_terminal=$(tput cols)  # Obtém a largura do terminal em colunas
+# Parte 2 - Logotipo Debian
 
-palavras=(
-    "       _,met\$\$\$\$\$gg.       "
-    "    ,g\$\$\$\$\$\$\$\$\$\$\$\$\$\$\$P.    "
-    "  ,g\$\$P\"     \"\"\"Y\$\$.\".     "
-    " ,\$\$P\'              \`\$\$\$.  "
-    "',\$\$P       ,ggs.     \`\\$\$b:"
-    "\`d\$\$'     ,\$P\"'   .    \$\$\$ "
-    " \$\$P      d\$'     ,    \$\$P "
-    " \$\$:      \$\$.   -    ,d\$\$' "
-    " \$\$;      Y\$b._   _,d\$P'   "
-    " \$Y\$\$.    \`.\`\"Y\$\$\$\$P\"'      "
-    " \`d\$\$b      \"-.__           "
-    "  \`Y\$\$                     "
-    "   \`Y\$\$.                   "
-    "     \`d\$\$.                 "
-    "       \`Y\$\$b.              "
-    "          \"\`Y\$b._          "
-    "             \`\"\"\"         "
-)
+largura_terminal=$(tput cols)
 
-for palavra in "${palavras[@]}"; do
-    # Calcula o número de espaços à esquerda e à direita da palavra
-    espacos_total=$((largura_terminal - ${#palavra} - 6))  # Subtrai 2 para as barras verticais
+# Cada linha do logotipo Debian individualmente
+linha1="        ${BD}_,met\$\$\$\$\$gg.${BR}      "
+linha2="     ${BD},g\$\$\$\$\$\$\$\$\$\$\$\$\$\$\$P.${BR}   "
+linha3="   ${BD},g\$\$P\"${BR}         ${BD}\"\"\"Y\$\$.\".${BR}"
+linha4=" ${BD},\$\$P'${BR}              ${BD}\`\$\$\$.${BR}"
+linha5="${BD}',\$\$P${BR}       ${BD},ggs.${BR}     ${BD}\`\$\$b:${BR}"
+linha6="${BD}\`d\$\$'${BR}     ${BD},\$P\"'${BR}   ${BD}.${BR}    ${BD}\$\$\$${BR} "
+linha7=" ${BD}\$\$P${BR}      ${BD}d\$'${BR}     ${BD},${BR}    ${BD}\$\$P${BR} "
+linha8=" ${BD}\$\$:${BR}      ${BD}\$\$.${BR}   ${BD}-${BR}    ${BD},d\$\$'${BR} "
+linha9=" ${BD}\$\$;${BR}      ${BD}Y\$b._${BR}   ${BD}_,d\$P'${BR}   "
+linha10=" ${BD}Y\$\$.${BR}    ${BD}\`.\`\"Y\$\$\$\$P\"'${BR}      "
+linha11=" ${BD}\`\$\$b${BR}      ${BD}\"-.__${BR}           "
+linha12="  ${BD}\`Y\$\$${BR}                     "
+linha13="   ${BD}\`Y\$\$.${BR}                   "
+linha14="      ${BD}\`\$\$.${BR}                 "
+linha15="       ${BD}\`Y\$\$b.${BR}              "
+linha16="          ${BD}\"\`Y\$b._${BR}          "
+linha17="              ${BD}\`\"\"\"${BR}        "
+
+# Função para centralizar e imprimir uma linha
+imprime_linha() {
+    palavra=$1
+    palavra_sem_corenorma=$(echo -e "$palavra" | sed 's/\x1b\[[0-9;]*m//g') # Remove as sequências de escape de cor
+    espacos_total=$((largura_terminal - ${#palavra_sem_corenorma} - 6))
     espacos_esquerda=$((espacos_total / 2))
     espacos_direita=$((espacos_total - espacos_esquerda))
-
-    # Monta a linha formatada com as barras verticais
     linha_formatada="│ │$(printf '%*s' $espacos_esquerda)${palavra}$(printf '%*s' $espacos_direita)│ │"
-
     echo -e "$BR$linha_formatada"
-done
+}
+
+# Imprimindo cada linha do logotipo
+imprime_linha "$linha1"
+imprime_linha "$linha2"
+imprime_linha "$linha3"
+imprime_linha "$linha4"
+imprime_linha "$linha5"
+imprime_linha "$linha6"
+imprime_linha "$linha7"
+imprime_linha "$linha8"
+imprime_linha "$linha9"
+imprime_linha "$linha10"
+imprime_linha "$linha11"
+imprime_linha "$linha12"
+imprime_linha "$linha13"
+imprime_linha "$linha14"
+imprime_linha "$linha15"
+imprime_linha "$linha16"
+imprime_linha "$linha17"
 
 # Parte 3
-
-#!/bin/bash
-
-# Obtém o tamanho do terminal
-terminal_width=$(tput cols)
-
-# Texto que você deseja inserir
 text="Debian GNU/Linux"
-
-# Calcula o número de caracteres "-" para formar o divisor à esquerda
 left_divider_length=$(( (terminal_width - ${#text}) / 2 - 5 ))
 left_divider=$(printf '─%.0s' $(seq 1 $left_divider_length))
-
-# Calcula o número de caracteres "-" para formar o divisor à direita
 right_divider_length=$(( terminal_width - ${#text} - ${#left_divider} - 4 - ${#left_divider} - 1 ))
 right_divider=$(printf '─%.0s' $(seq 1 $right_divider_length))
-
-# Calcula o número de caracteres "-" para preencher a linha totalmente à direita
 full_line_divider_length=$(( terminal_width - ${#text} - ${#left_divider} - ${#right_divider} - 5 ))
 full_line_divider=$(printf '─%.0s' $(seq 1 $full_line_divider_length))
 
-# Imprime a linha resultante totalmente preenchida
 if ((terminal_width % 2 == 0)); then
-    # Número par - Imprime a linha resultante totalmente preenchida
     echo -e "$BR│ ╰$left_divider[$BO $text $BR]$full_line_divider╯ │"
 else
-    # Número ímpar - Imprime a linha resultante com mais um divisor de linha
     echo -e "$BR│ ╰$left_divider[$BO $text $BR]$full_line_divider─╯ │"
 fi
 
